@@ -7,10 +7,8 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["Binus.BL.CertificateGenerator/Binus.BL.CertificateGenerator.csproj", "Binus.BL.CertificateGenerator/"]
-RUN dotnet restore "Binus.BL.CertificateGenerator/Binus.BL.CertificateGenerator.csproj"
 COPY . .
-WORKDIR "/src/Binus.BL.CertificateGenerator"
+RUN dotnet restore "Binus.BL.CertificateGenerator.csproj"
 RUN dotnet build "Binus.BL.CertificateGenerator.csproj" -c Release -o /app/build
 
 FROM build AS publish
@@ -18,5 +16,9 @@ RUN dotnet publish "Binus.BL.CertificateGenerator.csproj" -c Release -o /app/pub
 
 FROM base AS final
 WORKDIR /app
+
 COPY --from=publish /app/publish .
+COPY libwkhtmltox.dylib .
+COPY libwkhtmltox.so .
+COPY libwkhtmltox.dll .
 ENTRYPOINT ["dotnet", "Binus.BL.CertificateGenerator.dll"]
