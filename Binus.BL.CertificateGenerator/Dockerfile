@@ -2,6 +2,7 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
+RUN apt-get update -qq && apt-get -y install libgdiplus libc6-dev libxrender1 libxext6 libx11-6 libfreetype6 fontconfig zlib1g
 EXPOSE 80
 EXPOSE 443
 
@@ -18,7 +19,10 @@ FROM base AS final
 WORKDIR /app
 
 COPY --from=publish /app/publish .
-COPY libwkhtmltox.dylib .
-COPY libwkhtmltox.so .
-COPY libwkhtmltox.dll .
+#COPY libwkhtmltox.dylib .
+COPY libwkhtmltox.dylib /usr/lib
+#COPY libwkhtmltox.so .
+COPY libwkhtmltox.so /usr/lib
+#COPY libwkhtmltox.dll .
+COPY libwkhtmltox.dll /usr/lib
 ENTRYPOINT ["dotnet", "Binus.BL.CertificateGenerator.dll"]
